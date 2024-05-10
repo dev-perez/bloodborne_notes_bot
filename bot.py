@@ -5,14 +5,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+# File path for the CSV
 FILE_PATH = "./bloodborne_notes.csv"
 
+# Check if the CSV file exists
 if not os.path.exists(FILE_PATH):
     raise FileNotFoundError(
         f"The CSV file was not found at the specified path: {FILE_PATH}"
     )
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+# Check if the bot token is defined and not empty
 if not BOT_TOKEN:
     raise ValueError("Bot token is not defined or empty.")
 
@@ -29,6 +33,20 @@ def send_welcome_message(message):
     """
     bot.send_message(
         message.chat.id, "Welcome home, good Hunter. What is it you desire?"
+    )
+
+
+@bot.message_handler(commands=["info"])
+def send_info_message(message):
+    """
+    Sends information about the project to the user when they request it using the "/info" command.
+
+    Parameters:
+    message (telebot.types.Message): The message object containing information about the user's request.
+
+    """
+    bot.send_message(
+        message.chat.id, "Infos about the project at: bit.ly/bloodborne_notes_bot"
     )
 
 
@@ -56,11 +74,11 @@ def get_note_by_number(number_note):
     """
     with open(FILE_PATH, "r") as file:
         csv_notes = csv.reader(file, delimiter=",")
-        for line in csv_notes:
-            if line and line[0].isdigit():
-                order_note = int(line[0])
+        for csv_row in csv_notes:
+            if csv_row and csv_row[0].isdigit():
+                order_note = int(csv_row[0])
                 if order_note == number_note:
-                    return line[1]
+                    return csv_row[1]
     return None
 
 
